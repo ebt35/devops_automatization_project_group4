@@ -20,6 +20,7 @@ jobs:
       greating: "Hello"
       greating2: "world"
       greating3: "goodbye"
+      hemlis: ${{ secrets.HEMLIGHET }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -32,6 +33,6 @@ jobs:
       - name: Goodbye user
         run: "echo $greating3 $greating2"
       - name: hemlisar
-        run: "echo ${{ secrets.HEMLIGHET }}"
+        run: "echo $hemlis"
     
     

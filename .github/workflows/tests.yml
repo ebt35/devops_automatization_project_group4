@@ -1,26 +1,105 @@
-name: python tests
+name: DevOps Pipeline - AWS Deployment
 
-on: 
+on:
   push:
+    branches: [ main ]
   workflow_dispatch:
+    inputs:
+      enable_error_log:
+        description: "Generate error log if tests fail"
+        required: false
+        default: "false"
+
+env:
+  IMAGE_NAME: weather_cicd
+  IMAGE_TAG: latest
+  CONTAINER_NAME: weather_app
 
 jobs:
+  # ------------------ TESTING PHASE ------------------
   test:
+    name: 🧪 Run Unit Tests
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: set up python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: "3.11"
 
-      - name: install dependencies
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install --no-cache-dir -r requirements.txt
+          pip install -r requirements.txt
 
-      - name: run tests
-        run: pytest -v
+      - name: Run Tests
+        id: test
+        run: |
+          # Run pytest, show output in console, save to file
+          pytest | tee test_results.log
+
+      - name: Upload Error Log (if enabled and tests failed)
+        if: ${{ github.event.inputs.enable_error_log == 'true' && failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: error_log
+          path: test_results.log
+
+  # ------------------ BUILD & PUSH DOCKER IMAGE ------------------
+  build-and-push:
+    name: 🐳 Build & Push Docker Image
+    runs-on: ubuntu-latest
+    needs: test
+    if: success()
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+
+  # ------------------ DEPLOY TO AWS EC2 (SELF-HOSTED RUNNER) ------------------
+  deploy:
+    name: 🚀 Deploy on AWS EC2 (Self-Hosted)
+    runs-on: self-hosted
+    needs: build-and-push
+    if: success()
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Pull latest Docker image
+        run: |
+          IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
+          CONTAINER="${{ env.CONTAINER_NAME }}"
+          
+          echo "Pulling latest Docker image..."
+          docker pull $IMAGE
+          
+          echo "Stopping old container (if exists)..."
+          docker stop $CONTAINER || true
+          docker rm $CONTAINER || true
+          
+          echo "Starting new container..."
+          docker run -d --restart unless-stopped -p 8501:8501 --name $CONTAINER $IMAGE
+
+      - name: Verify Deployment
+        run: |
+          echo "Checking running containers:"
+          docker ps
+

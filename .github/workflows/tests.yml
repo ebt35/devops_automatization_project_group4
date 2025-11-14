@@ -73,9 +73,9 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
-  # ------------------ DEPLOY TO AWS EC2 (SELF-HOSTED RUNNER) ------------------
+  # ------------------ DEPLOY OM AZURE VM ------------------
   deploy:
-    name: 🚀 Deploy on AWS EC2 (Self-Hosted)
+    name: Deploy on Azure (Self-Hosted)
     runs-on: self-hosted
     needs: build-and-push
     if: success()

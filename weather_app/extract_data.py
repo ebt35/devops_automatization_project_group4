@@ -13,8 +13,8 @@ städer = {
                 "longitude": longitude_st},
     "göteborg": {"latitude": latitude_gb,
                 "longitude": longitude_gb},
-    "malmö": {"latitude": latitude_gb,
-                "longitude": longitude_gb}
+    "malmö": {"latitude": latitude_ma,
+                "longitude": longitude_ma}
 }
 
 def get_weather_data(city):

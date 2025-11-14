@@ -1,4 +1,4 @@
-name: EBT-DevOps-Pipeline-tests-docker-deploy
+name: EBT-weather-pipeline-tests-docker-deploy
 
 
 on:
@@ -51,7 +51,7 @@ jobs:
 
   # ------------------ BUILD & PUSH DOCKER IMAGE ------------------
   build-and-push:
-    name: 🐳 Build & Push Docker Image
+    name: Build & Push Docker Image
     runs-on: ubuntu-latest
     needs: test
     if: success()
@@ -75,7 +75,7 @@ jobs:
 
   # ------------------ DEPLOY OM AZURE VM ------------------
   deploy:
-    name: Deploy on Azure (Self-Hosted)
+    name: Deploy on Azure 
     runs-on: self-hosted
     needs: build-and-push
     if: success()

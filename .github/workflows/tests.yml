@@ -1,4 +1,5 @@
-name: DevOps Pipeline - AWS Deployment
+name: EBT-DevOps-Pipeline-tests-docker-deploy
+
 
 on:
   push:

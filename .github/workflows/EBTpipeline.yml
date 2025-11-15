@@ -1,4 +1,4 @@
-name: EBT-weather-pipeline-tests-docker-deploy
+name: EBT-test-docker-deploy
 
 
 on:

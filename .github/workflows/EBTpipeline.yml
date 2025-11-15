@@ -70,7 +70,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 

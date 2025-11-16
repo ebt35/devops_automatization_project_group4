@@ -74,33 +74,33 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
   # ------------------ DEPLOY OM AZURE VM ------------------
-  deploy:
-    name: Deploy on Azure 
-    runs-on: self-hosted
-    needs: build-and-push
-    if: success()
+  # deploy:
+   # name: Deploy on Azure 
+   # runs-on: self-hosted
+   # needs: build-and-push
+   # if: success()
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+   # steps:
+     # - name: Checkout Repository
+      #  uses: actions/checkout@v4
 
-      - name: Pull latest Docker image
-        run: |
-          IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
-          CONTAINER="${{ env.CONTAINER_NAME }}"
+     # - name: Pull latest Docker image
+      #  run: |
+       #   IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
+        #  CONTAINER="${{ env.CONTAINER_NAME }}"
           
-          echo "Pulling latest Docker image..."
-          docker pull $IMAGE
+         # echo "Pulling latest Docker image..."
+         # docker pull $IMAGE
           
-          echo "Stopping old container (if exists)..."
-          docker stop $CONTAINER || true
-          docker rm $CONTAINER || true
+         # echo "Stopping old container (if exists)..."
+         # docker stop $CONTAINER || true
+        #  docker rm $CONTAINER || true
           
-          echo "Starting new container..."
-          docker run -d --restart unless-stopped -p 8501:8501 --name $CONTAINER $IMAGE
+         # echo "Starting new container..."
+        #  docker run -d --restart unless-stopped -p 8501:8501 --name $CONTAINER $IMAGE
 
-      - name: Verify Deployment
-        run: |
-          echo "Checking running containers:"
-          docker ps
+     # - name: Verify Deployment
+      #  run: |
+        #  echo "Checking running containers:"
+        #  docker ps
 

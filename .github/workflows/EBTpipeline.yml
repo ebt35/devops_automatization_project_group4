@@ -19,7 +19,7 @@ env:
 jobs:
   # ------------------ TESTING PHASE ------------------
   test:
-    name: Unit/integration tests
+    name: tests
     runs-on: ubuntu-latest
 
     steps:
